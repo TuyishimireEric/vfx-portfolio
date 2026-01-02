@@ -114,6 +114,57 @@
     opacity: 1;
 }
 
+/* Admin Controls */
+.adminControls {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.skillCard:hover .adminControls {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.iconBtn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1.5px solid rgba(0, 212, 255, 0.5);
+    border-radius: 6px;
+    cursor: pointer;
+    color: #00d4ff;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.iconBtn:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.deleteBtn {
+    border-color: rgba(255, 68, 68, 0.5);
+    color: #ff4444;
+}
+
+.deleteBtn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: #ff4444;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+}
+
 /* Themes */
 .orange .cardTitle {
     color: var(--neon-orange);

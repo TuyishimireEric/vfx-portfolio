@@ -1,0 +1,233 @@
+.skillPage {
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+    padding: 2rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.backBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2rem 0;
+    padding: 12px 24px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--neon-blue);
+    border-radius: 4px;
+    color: var(--neon-blue);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.backBtn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    transform: translateX(-5px);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.skillHeader {
+    text-align: center;
+    padding: 4rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.iconLarge {
+    font-size: 6rem;
+    margin-bottom: 2rem;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.skillTitle {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    color: var(--neon-blue);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.skillDescription {
+    font-size: 1.3rem;
+    color: #ccc;
+    line-height: 1.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.skillImage {
+    max-width: 900px;
+    margin: 3rem auto;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+}
+
+.skillImage img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    pointer-events: none;
+}
+
+.relatedSection {
+    margin-top: 5rem;
+}
+
+.relatedSection h2 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--neon-orange);
+    margin-bottom: 3rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.projectsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.projectCard {
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.projectCard img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.projectPlaceholder {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--neon-blue);
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+}
+
+.projectInfo {
+    padding: 1.5rem;
+}
+
+.projectInfo h3 {
+    font-family: var(--font-display);
+    color: #fff;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.projectInfo p {
+    color: #888;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.loading,
+.notFound {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--neon-blue);
+    font-family: var(--font-display);
+    gap: 2rem;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(0, 212, 255, 0.1);
+    border-top-color: #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.backgroundGrid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@media (max-width: 768px) {
+    .skillTitle {
+        font-size: 2.5rem;
+    }
+
+    .iconLarge {
+        font-size: 4rem;
+    }
+
+    .projectsGrid {
+        grid-template-columns: 1fr;
+    }
+}

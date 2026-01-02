@@ -77,23 +77,33 @@ export default function Contact() {
         setStatus('sending');
 
         const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData);
 
         try {
-            const res = await fetch('/api/contact', {
+            // Using Formspree - requires NEXT_PUBLIC_FORMSPREE_ENDPOINT in .env.local
+            // Example: https://formspree.io/f/your_form_id
+            const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'https://formspree.io/f/xbjnqngl'; // Fallback to a demo one or leave empty
+
+            const res = await fetch(endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
             });
 
             if (res.ok) {
                 setStatus('success');
+                addToast('Message sent successfully!', 'success');
                 e.target.reset();
+                setTimeout(() => setStatus(''), 3000);
             } else {
                 setStatus('error');
+                addToast('Failed to send message. Please try again.', 'error');
             }
         } catch (error) {
+            console.error('Error:', error);
             setStatus('error');
+            addToast('Failed to send message. Please try again.', 'error');
         }
     };
 
