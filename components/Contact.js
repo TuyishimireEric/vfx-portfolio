@@ -112,15 +112,14 @@ export default function Contact() {
                     <div className={styles.contactCard}>
                         {/* Left Column: Info */}
                         <div className={styles.infoColumn}>
-                            <div className={styles.qrPlaceholder}>
-                                {/* Replace with actual QR code image */}
-                                {/* Generate QR code at: https://www.qr-code-generator.com/ */}
-                                {/* Use your portfolio URL as the content */}
-                                <div className={styles.qrScanline}></div>
-                                <span>SCAN QR CODE</span>
-                                <p style={{ fontSize: '0.7rem', marginTop: '0.5rem', opacity: 0.5 }}>
-                                    Portfolio Link
-                                </p>
+                            <div className={styles.qrContainer}>
+                                {/* Real scannable QR code generated via API */}
+                                <img
+                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : 'https://yourportfolio.com')}&bgcolor=000000&color=00d4ff`}
+                                    alt="Portfolio QR Code"
+                                    className={styles.qrCode}
+                                />
+                                <p className={styles.qrLabel}>Scan to visit portfolio</p>
                             </div>
 
                             <div className={styles.contactDetails}>
