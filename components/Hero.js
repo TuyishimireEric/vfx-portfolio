@@ -1,9 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Loader2 } from 'lucide-react';
+import { fadeInUp, fadeInDown, staggerContainer } from '@/lib/animations';
 import styles from './Hero.module.css';
 
 export default function Hero() {
@@ -83,17 +85,22 @@ export default function Hero() {
     return (
         <section className={styles.heroSection}>
             <div className={styles.heroContainer}>
-                <div className={styles.heroContent}>
+                <motion.div
+                    className={styles.heroContent}
+                    initial="hidden"
+                    animate="visible"
+                    variants={staggerContainer}
+                >
                     <div className={styles.hudRing}></div>
-                    <h1 className={styles.heroTitle}>
+                    <motion.h1 className={styles.heroTitle} variants={fadeInDown}>
                         <span className={styles.glitchText} data-text="3D & VFX">3D & VFX</span>
                         <br />
                         <span className="neon-text-blue">ARTIST PORTFOLIO</span>
-                    </h1>
-                    <p className={styles.heroSubtitle}>
+                    </motion.h1>
+                    <motion.p className={styles.heroSubtitle} variants={fadeInUp}>
                         {heroContent.subtitle}
-                    </p>
-                </div>
+                    </motion.p>
+                </motion.div>
 
                 <div className={styles.heroFrame}>
                     <div className={styles.cornerBracketTopLeft}></div>

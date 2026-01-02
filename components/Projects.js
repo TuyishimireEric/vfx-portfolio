@@ -1,10 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Loader2 } from 'lucide-react';
+import { staggerContainer, staggerItem } from '@/lib/animations';
 import styles from './Projects.module.css';
 
 export default function Projects() {
@@ -110,10 +112,25 @@ export default function Projects() {
                         Loading projects...
                     </div>
                 ) : (
-                    <div className={styles.projectsGrid}>
+                    <motion.div
+                        className={styles.projectsGrid}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.1 }}
+                        variants={staggerContainer}
+                    >
                         {projects.map((project) => (
                             <Link href={`/projects/${project.id}`} key={project.id} className={styles.projectCardLink}>
-                                <div className={styles.projectCard}>
+                                <motion.div
+                                    className={styles.projectCard}
+                                    variants={staggerItem}
+                                    whileHover={{
+                                        y: -15,
+                                        scale: 1.03,
+                                        boxShadow: "0 25px 50px rgba(0, 212, 255, 0.4)",
+                                        transition: { duration: 0.3, ease: [0.6, 0.05, 0.01, 0.9] }
+                                    }}
+                                >
                                     {isAdmin && (
                                         <button
                                             className={styles.editBtn}
@@ -150,10 +167,10 @@ export default function Projects() {
                                         <div className={styles.cornerTL}></div>
                                         <div className={styles.cornerBR}></div>
                                     </div>
-                                </div>
+                                </motion.div>
                             </Link>
                         ))}
-                    </div>
+                    </motion.div>
                 )}
 
                 {editingProject && (

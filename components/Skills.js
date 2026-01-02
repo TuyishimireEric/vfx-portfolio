@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { staggerContainer, staggerItem } from '@/lib/animations';
 import styles from './Skills.module.css';
 
 const defaultSkills = [
@@ -191,10 +193,25 @@ export default function Skills() {
                     </button>
                 )}
 
-                <div className={styles.skillsGrid}>
+                <motion.div
+                    className={styles.skillsGrid}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    variants={staggerContainer}
+                >
                     {skills.map((skill) => (
                         <Link href={`/projects/category/${skill.id}`} key={skill.id} className={styles.skillLink}>
-                            <div className={`${styles.skillCard} ${styles[skill.theme] || styles.cyan}`}>
+                            <motion.div
+                                className={`${styles.skillCard} ${styles[skill.theme] || styles.cyan}`}
+                                variants={staggerItem}
+                                whileHover={{
+                                    y: -10,
+                                    scale: 1.05,
+                                    boxShadow: "0 20px 40px rgba(0, 212, 255, 0.3)",
+                                    transition: { duration: 0.3, ease: [0.6, 0.05, 0.01, 0.9] }
+                                }}
+                            >
                                 {isAdmin && (
                                     <div className={styles.adminControls}>
                                         <button onClick={(e) => handleEditClick(e, skill)} className={styles.iconBtn}>
@@ -222,10 +239,10 @@ export default function Skills() {
                                 </div>
                                 <p className={styles.cardDesc}>{skill.desc}</p>
                                 <div className={styles.cardBorder}></div>
-                            </div>
+                            </motion.div>
                         </Link>
                     ))}
-                </div>
+                </motion.div>
 
                 {editingSkill && (
                     <div className={styles.editOverlay}>
@@ -300,6 +317,6 @@ export default function Skills() {
                     <span>Houdini</span> • <span>Unreal Engine</span> • <span>Nuke</span> • <span>Blender</span> • <span>Python</span>
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
