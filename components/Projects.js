@@ -15,12 +15,26 @@ export default function Projects() {
     const [editingProject, setEditingProject] = useState(null);
     const [editForm, setEditForm] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
 
     const handleEditClick = (e, project) => {
         e.preventDefault(); // Prevent Link navigation
         e.stopPropagation();
         setEditingProject(project.id);
         setEditForm(project);
+        setIsAdding(false);
+    };
+
+    const handleAddNew = () => {
+        setEditForm({
+            title: '',
+            description: '',
+            image_url: '',
+            tags: [],
+            order_index: projects.length
+        });
+        setIsAdding(true);
+        setEditingProject('new');
     };
 
     const handleSave = async () => {
@@ -39,10 +53,17 @@ export default function Projects() {
                 throw new Error(`Database error: ${error.message}\nHint: ${error.hint || 'Check if you are logged in and the table exists'}`);
             }
 
-            setProjects(projects.map(p => p.id === editForm.id ? data[0] : p));
+            if (isAdding) {
+                setProjects([...projects, data[0]]);
+                addToast('Project added successfully!', 'success');
+            } else {
+                setProjects(projects.map(p => p.id === editForm.id ? data[0] : p));
+                addToast('Project updated successfully!', 'success');
+            }
+
             setEditingProject(null);
             setEditForm(null);
-            addToast('Project updated successfully!', 'success');
+            setIsAdding(false);
         } catch (error) {
             console.error('Error updating project:', error);
             addToast(error.message, 'error');
@@ -74,7 +95,15 @@ export default function Projects() {
     return (
         <section className={styles.projectsSection}>
             <div className="container">
-                <h2 className={styles.sectionTitle}>FEATURED WORKS</h2>
+                <div className={styles.headerSection}>
+                    <h2 className={styles.sectionTitle}>FEATURED WORKS</h2>
+                    {isAdmin && (
+                        <button onClick={handleAddNew} className={styles.addBtn}>
+                            <Plus size={16} />
+                            Add New Project
+                        </button>
+                    )}
+                </div>
 
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '3rem', color: '#00d4ff' }}>
@@ -131,7 +160,7 @@ export default function Projects() {
                     <div className={styles.editModalOverlay}>
                         <div className={styles.editForm}>
                             <div className={styles.editHeader}>
-                                <h3>Edit Project</h3>
+                                <h3>{isAdding ? 'Add New Project' : 'Edit Project'}</h3>
                                 <button onClick={() => setEditingProject(null)} className={styles.closeBtn}>
                                     <X size={20} />
                                 </button>

@@ -7,10 +7,38 @@
 .sectionTitle {
     font-family: var(--font-display);
     font-size: 3rem;
-    margin-bottom: 4rem;
+    margin-bottom: 0;
     color: #fff;
     text-align: center;
     text-transform: uppercase;
+}
+
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.addBtn {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.addBtn:hover {
+    background: var(--neon-blue);
+    color: #000;
 }
 
 .servicesGrid {
@@ -32,6 +60,51 @@
 
 .serviceItem:hover {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.adminControls {
+    display: flex;
+    gap: 8px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.serviceItem:hover .adminControls {
+    opacity: 1;
+}
+
+.editBtn,
+.delBtn {
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    color: #00d4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.editBtn:hover {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00d4ff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.delBtn {
+    border-color: rgba(255, 68, 68, 0.3);
+    color: #ff4444;
+}
+
+.delBtn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
 }
 
 .iconContainer {
@@ -90,6 +163,161 @@
     right: 2rem;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+/* Enhanced Edit Modal Styles */
+.editOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.editForm {
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 212, 255, 0.2),
+        0 0 40px rgba(0, 212, 255, 0.1);
+    animation: slideUp 0.3s ease;
+}
+
+.editHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.editHeader h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    color: #00d4ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.closeBtn {
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    color: #ff4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.closeBtn:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
+
+.editInput,
+.editTextarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 6px;
+    padding: 12px 16px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin-bottom: 16px;
+    transition: all 0.3s;
+}
+
+.editInput:focus,
+.editTextarea:focus {
+    outline: none;
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.editInput::placeholder,
+.editTextarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.editTextarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.editActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.saveBtn,
+.cancelBtn {
+    flex: 1;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.saveBtn {
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid rgba(0, 212, 255, 0.5);
+    color: #00d4ff;
+}
+
+.saveBtn:hover:not(:disabled) {
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00d4ff;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.saveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancelBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.cancelBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
 }
 
 @media (max-width: 768px) {

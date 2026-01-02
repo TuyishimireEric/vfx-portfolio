@@ -1,94 +1,103 @@
-import Link from 'next/link';
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { ArrowLeft, Calendar, Tag } from 'lucide-react';
 import styles from './ProjectDetail.module.css';
 
-// Mock data - in a real app this would come from a database or CMS
-const projects = {
-  1: {
-    title: 'NEON DYSTOPIA',
-    desc: 'Cyberpunk city destruction sequence featuring large-scale RBD and Pyro simulations.',
-    client: 'Personal Project',
-    role: 'FX Lead',
-    tools: ['Houdini', 'Nuke', 'Redshift'],
-    breakdown: [
-      { title: 'The Challenge', text: 'Creating a believable city destruction sequence with thousands of rigid body pieces and interacting smoke simulations.' },
-      { title: 'The Solution', text: 'Used a custom Voronoi fracture setup driven by guided curves to control the destruction timing. Pyro sims were up-resed using sparse solvers.' }
-    ]
-  },
-  2: {
-    title: 'ABYSSAL VOID',
-    desc: 'Underwater creature animation with complex FLIP fluid interaction and volumetric lighting.',
-    client: 'Film Studio X',
-    role: 'FX Artist',
-    tools: ['Houdini', 'Maya', 'Arnold'],
-    breakdown: [
-      { title: 'Fluid Dynamics', text: 'The creature interaction required a high-resolution FLIP tank with custom viscosity settings for the slime layer.' },
-      { title: 'Lighting', text: 'Volumetric caustics were generated using a gobo light setup in Arnold to simulate deep underwater atmosphere.' }
-    ]
-  },
-  3: {
-    title: 'AETHER REALM',
-    desc: 'Abstract procedural environment generated using heightfields and particle advection.',
-    client: 'Game Studio Y',
-    role: 'Environment Artist',
-    tools: ['Houdini', 'Unreal Engine 5'],
-    breakdown: [
-      { title: 'Procedural Terrain', text: 'Heightfields were eroded using a custom HDA to simulate aeolian erosion patterns unique to alien landscapes.' },
-      { title: 'Real-time Integration', text: 'Assets were optimized for Nanite and Lumen in UE5, maintaining high fidelity at 60fps.' }
-    ]
-  }
-};
-
 export default function ProjectDetail({ params }) {
-  const project = projects[params.id];
+  const router = useRouter();
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('id', params.id)
+          .single();
+
+        if (error) throw error;
+        setProject(data);
+      } catch (error) {
+        console.error('Error fetching project:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchProject();
+    }
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <main className={styles.container}>
+        <div style={{ textAlign: 'center', padding: '5rem', color: '#00d4ff' }}>
+          <div className={styles.spinner}></div>
+          <p>Loading project...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!project) {
-    return <div className={styles.notFound}>Project not found</div>;
+    return (
+      <main className={styles.container}>
+        <div className={styles.notFound}>
+          <h1>Project Not Found</h1>
+          <button onClick={() => router.push('/')} className={styles.backLink}>
+            <ArrowLeft size={20} />
+            Back to Home
+          </button>
+        </div>
+      </main>
+    );
   }
 
   return (
     <main className={styles.container}>
-      <Link href="/" className={styles.backLink}>← Back to Home</Link>
-      
+      <button onClick={() => router.push('/')} className={styles.backLink}>
+        <ArrowLeft size={20} />
+        Back to Projects
+      </button>
+
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1 className={styles.title}>{project.title}</h1>
-          <p className={styles.subtitle}>{project.desc}</p>
+          <p className={styles.subtitle}>{project.description}</p>
+          {project.created_at && (
+            <div className={styles.metaInfo}>
+              <Calendar size={16} />
+              <span>{new Date(project.created_at).toLocaleDateString()}</span>
+            </div>
+          )}
         </div>
         <div className={styles.heroImage}>
-          <div className={styles.placeholder}>HERO SHOT</div>
+          {project.image_url ? (
+            <img src={project.image_url} alt={project.title} />
+          ) : (
+            <div className={styles.placeholder}>PROJECT VISUAL</div>
+          )}
         </div>
       </section>
 
-      <div className={styles.grid}>
-        <div className={styles.sidebar}>
-          <div className={styles.infoBlock}>
-            <h3>CLIENT</h3>
-            <p>{project.client}</p>
-          </div>
-          <div className={styles.infoBlock}>
-            <h3>ROLE</h3>
-            <p>{project.role}</p>
-          </div>
-          <div className={styles.infoBlock}>
-            <h3>TOOLS</h3>
-            <div className={styles.tags}>
-              {project.tools.map(tool => <span key={tool} className={styles.tag}>{tool}</span>)}
-            </div>
+      {project.tags && project.tags.length > 0 && (
+        <div className={styles.tagsSection}>
+          <h3>Technologies Used</h3>
+          <div className={styles.tags}>
+            {project.tags.map((tool, index) => (
+              <span key={index} className={styles.tag}>
+                <Tag size={14} />
+                {tool}
+              </span>
+            ))}
           </div>
         </div>
-
-        <div className={styles.content}>
-          {project.breakdown.map((section, index) => (
-            <div key={index} className={styles.section}>
-              <h2 className={styles.sectionHeader}>{section.title}</h2>
-              <p className={styles.text}>{section.text}</p>
-              <div className={styles.mediaPlaceholder}>
-                BREAKDOWN MEDIA {index + 1}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </main>
   );
 }

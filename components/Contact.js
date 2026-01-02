@@ -113,8 +113,14 @@ export default function Contact() {
                         {/* Left Column: Info */}
                         <div className={styles.infoColumn}>
                             <div className={styles.qrPlaceholder}>
+                                {/* Replace with actual QR code image */}
+                                {/* Generate QR code at: https://www.qr-code-generator.com/ */}
+                                {/* Use your portfolio URL as the content */}
                                 <div className={styles.qrScanline}></div>
-                                <span>QR CODE</span>
+                                <span>SCAN QR CODE</span>
+                                <p style={{ fontSize: '0.7rem', marginTop: '0.5rem', opacity: 0.5 }}>
+                                    Portfolio Link
+                                </p>
                             </div>
 
                             <div className={styles.contactDetails}>

@@ -113,24 +113,26 @@ export default function Services() {
     };
     return (
         <section className={styles.servicesSection}>
-            <div className="container" style={{ position: 'relative' }}>
-                <h2 className={styles.sectionTitle}>SERVICES</h2>
-
-                {isAdmin && (
-                    <button onClick={handleAddClick} className={styles.addBtn}>
-                        <Plus size={16} /> Add Service
-                    </button>
-                )}
+            <div className="container">
+                <div className={styles.headerSection}>
+                    <h2 className={styles.sectionTitle}>SERVICES</h2>
+                    {isAdmin && (
+                        <button onClick={handleAddClick} className={styles.addBtn}>
+                            <Plus size={16} />
+                            Add New Service
+                        </button>
+                    )}
+                </div>
 
                 <div className={styles.servicesGrid}>
-                    {services.map((service) => (
+                    {services.map(service => (
                         <div key={service.id} className={styles.serviceItem}>
                             {isAdmin && (
                                 <div className={styles.adminControls}>
-                                    <button onClick={() => handleEditClick(service)} className={styles.iconBtn}>
+                                    <button onClick={() => handleEditClick(service)} className={styles.editBtn}>
                                         <Edit2 size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(service.id)} className={`${styles.iconBtn} ${styles.deleteBtn}`}>
+                                    <button onClick={() => handleDelete(service.id)} className={styles.delBtn}>
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -147,46 +149,57 @@ export default function Services() {
                         </div>
                     ))}
                 </div>
+            </div>
 
-                {editingService && (
-                    <div className={styles.editOverlay}>
-                        <div className={styles.editForm}>
-                            <div className={styles.editHeader}>
-                                <h3>{isAdding ? 'Add Service' : 'Edit Service'}</h3>
-                                <button onClick={() => setEditingService(null)} className={styles.closeBtn}>
-                                    <X size={20} />
-                                </button>
-                            </div>
+            {editingService && serviceForm && (
+                <div className={styles.editOverlay}>
+                    <div className={styles.editForm}>
+                        <div className={styles.editHeader}>
+                            <h3>{isAdding ? 'Add New Service' : 'Edit Service'}</h3>
+                            <button onClick={() => { setEditingService(null); setServiceForm(null); setIsAdding(false); }} className={styles.closeBtn}>
+                                <X size={20} />
+                            </button>
+                        </div>
 
-                            <input
-                                value={serviceForm.title}
-                                onChange={e => setServiceForm({ ...serviceForm, title: e.target.value })}
-                                placeholder="Service Title"
-                                className={styles.editInput}
-                            />
-                            <textarea
-                                value={serviceForm.desc || ''}
-                                onChange={e => setServiceForm({ ...serviceForm, desc: e.target.value })}
-                                placeholder="Description"
-                                className={styles.editTextarea}
-                            />
-                            <input
-                                value={serviceForm.icon}
-                                onChange={e => setServiceForm({ ...serviceForm, icon: e.target.value })}
-                                placeholder="Icon (Emoji)"
-                                className={styles.editInput}
-                            />
+                        <input
+                            value={serviceForm.icon}
+                            onChange={e => setServiceForm({ ...serviceForm, icon: e.target.value })}
+                            placeholder="Icon (Emoji)"
+                            className={styles.editInput}
+                        />
+                        <input
+                            value={serviceForm.title}
+                            onChange={e => setServiceForm({ ...serviceForm, title: e.target.value })}
+                            placeholder="Service Title"
+                            className={styles.editInput}
+                        />
+                        <textarea
+                            value={serviceForm.desc}
+                            onChange={e => setServiceForm({ ...serviceForm, desc: e.target.value })}
+                            placeholder="Service Description"
+                            className={styles.editTextarea}
+                        />
 
-                            <div className={styles.editActions}>
-                                <button onClick={handleSave} className={styles.saveBtn} disabled={isSaving}>
-                                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                                    {isSaving ? 'Saving...' : 'Save'}
-                                </button>
-                            </div>
+                        <div className={styles.editActions}>
+                            <button onClick={handleSave} className={styles.saveBtn} disabled={isSaving}>
+                                {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                {isSaving ? 'Saving...' : 'Save Changes'}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setEditingService(null);
+                                    setServiceForm(null);
+                                    setIsAdding(false);
+                                }}
+                                className={styles.cancelBtn}
+                            >
+                                <X size={16} />
+                                Cancel
+                            </button>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </section>
     );
 }
