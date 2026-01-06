@@ -26,6 +26,32 @@ export async function createUser(prevState, formData) {
 
         if (error) throw error;
 
+        // Assign 'user' role
+        if (data.user) {
+            const { data: roleData, error: roleError } = await supabase
+                .from('roles')
+                .select('id')
+                .eq('name', 'user')
+                .single();
+
+            if (roleError) {
+                console.error('Error fetching user role:', roleError);
+            } else if (roleData) {
+                const { error: assignError } = await supabase
+                    .from('user_roles')
+                    .insert({
+                        user_id: data.user.id,
+                        role_id: roleData.id
+                    });
+
+                if (assignError) {
+                    console.error('Error assigning role:', assignError);
+                }
+            }
+        }
+
+        if (error) throw error;
+
         return { message: `User ${email} created successfully!`, error: false };
     } catch (error) {
         console.error('Create user error:', error);

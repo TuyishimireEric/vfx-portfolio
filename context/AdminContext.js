@@ -12,17 +12,43 @@ export function AdminProvider({ children }) {
 
     useEffect(() => {
         // Check active session
-        const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+        const checkAdminRole = async (session) => {
+            if (!session?.user) {
+                setIsAdmin(false);
+                return;
+            }
+
+            try {
+                const { data: userRoles, error } = await supabase
+                    .from('user_roles')
+                    .select('roles(name)')
+                    .eq('user_id', session.user.id);
+
+                if (error) {
+                    console.error('Error fetching roles:', error);
+                    setIsAdmin(false);
+                    return;
+                }
+
+                const roles = userRoles?.map(r => r.roles?.name) || [];
+                // Fallback to email check if roles table is empty or connection fails (optional safety net, or removed as requested?)
+                // User said "no need to check on specific emails". I will strictly follow that.
+                setIsAdmin(roles.includes('admin'));
+            } catch (err) {
+                console.error('Admin check failed:', err);
+                setIsAdmin(false);
+            }
+        };
 
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            setIsAdmin(!!session && (!adminEmail || session.user.email === adminEmail));
+            checkAdminRole(session);
         };
 
         checkSession();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setIsAdmin(!!session && (!adminEmail || session.user.email === adminEmail));
+            checkAdminRole(session);
         });
 
         return () => subscription.unsubscribe();
