@@ -1,40 +1,42 @@
-# 3D & VFX Artist Portfolio
+# Jules Rukundo — Houdini FX Artist Portfolio
 
-A high-end, futuristic portfolio website for a VFX Technical Director, featuring a cinematic interface with neon accents and holographic elements.
+Live: https://vfx-portfolio-ecru.vercel.app
 
-## Tech Stack
-- **Framework**: Next.js (App Router)
-- **Styling**: Vanilla CSS (CSS Modules)
-- **Design**: Minimalistic, Dark Mode, Neon Aesthetics
+A cinematic dark/neon portfolio for Jules Rukundo, FX artist (SideFX Houdini + Nuke) based in Kigali, Rwanda — pyro, destruction, FLIP fluids, particles and cloth.
 
-## Setup Instructions
+## Stack
+- **Next.js 14** (App Router) · React 18 · Framer Motion · Lucide icons
+- **Vanilla CSS** with CSS Modules
+- **Supabase** (optional) — in-page admin editing of hero / about / skills / projects / services / contact
+- Deployed on **Vercel**
 
-Since the project was scaffolded manually, you need to install dependencies first.
+## Content
+All site content lives in **`lib/content.js`** — name, bio, skills, featured works, services, links.
+Edit that one file to change what the site says. Media (clips, posters, photo, OG image) is in `public/media/`.
 
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+If Supabase is configured and an admin has saved edits through the site's "System Access" editor, those override the defaults from `lib/content.js`.
 
-2.  **Run Development Server**:
-    ```bash
-    npm run dev
-    ```
+## Run locally
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run build && npm start
+```
 
-3.  **Build for Production**:
-    ```bash
-    npm run build
-    npm start
-    ```
+## Environment (all optional)
+Copy `.env.example` to `.env.local`. The site works with none of them set:
+- **Contact form** — works out of the box via FormSubmit (the first message triggers a one-time
+  activation email to the inbox; click Activate once). Or set `WEB3FORMS_ACCESS_KEY` from web3forms.com.
+- **Supabase** — only needed for the admin editor. Run the SQL in `supabase/` to create the tables.
 
-## Project Structure
-- `app/`: Contains the main page structure and global styles.
-- `components/`: Reusable UI components (Hero, About, Skills, Projects, Services, Contact).
-- `public/`: Static assets.
+## Adding a project
+1. Drop the clip + a poster still into `public/media/` (mp4, ≤ ~10 MB; poster jpg).
+2. Add an entry to `projects` in `lib/content.js` (`id` becomes the URL: `/projects/<id>`).
+3. Tag it with `categories` matching skill ids so it appears on the skill pages.
 
-## Features
-- **Cinematic Cover**: Hero section with holographic HUD elements.
-- **VFX Skills**: Grid layout showcasing Houdini operators and FX categories.
-- **Feature Projects**: Large cinematic cards with hover effects.
-- **Services**: Clean 2-column layout for offered services.
-- **Contact**: Minimal contact section with QR code placeholder.
+## Structure
+- `app/` — pages, layout (SEO metadata, JSON-LD), `robots.js`, `sitemap.js`, contact API route
+- `components/` — Nav, Hero, About, Skills, Projects, Services, Contact (+ admin editor UI)
+- `lib/content.js` — **all copy and links**
+- `lib/supabase.js` — Supabase client (mock client when not configured)
+- `supabase/` — SQL schemas for the optional admin editor
