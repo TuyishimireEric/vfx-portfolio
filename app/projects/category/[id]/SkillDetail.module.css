@@ -2,7 +2,7 @@
     min-height: 100vh;
     background: #000;
     color: #fff;
-    padding: 2rem 0 4rem;
+    padding: 5rem 0 4rem;
     position: relative;
     overflow: hidden;
 }
@@ -230,4 +230,20 @@
     .projectsGrid {
         grid-template-columns: 1fr;
     }
+}
+.emptyNote {
+    color: #aaa;
+    line-height: 1.7;
+    max-width: 640px;
+}
+
+.emptyNote a {
+    color: var(--neon-blue);
+    border-bottom: 1px solid rgba(0, 243, 255, 0.4);
+}
+
+.projectInfo h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
