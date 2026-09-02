@@ -275,3 +275,132 @@
 .cancelBtn:hover {
     background: #444;
 }
+/* ---- additions: kicker, CTAs, frame label, responsive ---- */
+.kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon-orange);
+    margin-bottom: 1.25rem;
+}
+
+.ctaRow {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+}
+
+.ctaPrimary,
+.ctaSecondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.ctaPrimary {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.ctaPrimary:hover {
+    background: #fff;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
+}
+
+.ctaSecondary {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.ctaSecondary:hover {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+}
+
+.frameLabel {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.55);
+    padding: 4px 10px;
+    border: 1px solid rgba(0, 243, 255, 0.25);
+    pointer-events: none;
+}
+
+.frameDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff3b3b;
+    box-shadow: 0 0 8px #ff3b3b;
+    animation: blink 1.6s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+}
+
+@media (max-width: 900px) {
+    .heroSection {
+        min-height: auto;
+        padding-top: 14vh;
+        padding-bottom: 4rem;
+    }
+
+    .heroTitle {
+        font-size: 2.6rem;
+        letter-spacing: 1px;
+    }
+
+    .heroSubtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .heroFrame {
+        width: 92%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    .kicker {
+        font-size: 0.65rem;
+        padding: 0 1rem;
+        text-align: center;
+    }
+
+    .ctaRow {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .heroTitle {
+        font-size: 2rem;
+    }
+
+    .frameLabel {
+        display: none;
+    }
+}

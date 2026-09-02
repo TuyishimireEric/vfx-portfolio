@@ -7,73 +7,10 @@ import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { staggerContainer, staggerItem } from '@/lib/animations';
+import { skills as contentSkills, software } from '@/lib/content';
 import styles from './Skills.module.css';
 
-const defaultSkills = [
-    {
-        id: 'pyro',
-        title: 'Pyro FX',
-        desc: 'Fire, Smoke, Explosions',
-        icon: '🔥',
-        theme: 'orange'
-    },
-    {
-        id: 'rbd',
-        title: 'RBD / Destruction',
-        desc: 'Fracturing, Rigid Bodies',
-        icon: '💥',
-        theme: 'red'
-    },
-    {
-        id: 'flip',
-        title: 'FLIP Fluids',
-        desc: 'Water, Splash, Ocean',
-        icon: '🌊',
-        theme: 'blue'
-    },
-    {
-        id: 'vellum',
-        title: 'Vellum',
-        desc: 'Cloth, Hair, Soft Bodies',
-        icon: '🧵',
-        theme: 'purple'
-    },
-    {
-        id: 'terrain',
-        title: 'Terrain',
-        desc: 'Heightfields, Landscapes',
-        icon: '⛰️',
-        theme: 'green'
-    },
-    {
-        id: 'particles',
-        title: 'Particles',
-        desc: 'Procedural Modeling, POPs',
-        icon: '✨',
-        theme: 'cyan'
-    },
-    {
-        id: 'mpm',
-        title: 'MPM',
-        desc: 'Granular, Sand, Snow',
-        icon: '🧩',
-        theme: 'neonBlue'
-    },
-    {
-        id: 'tops',
-        title: 'TOPs / PDG',
-        desc: 'Task Operators, Pipeline',
-        icon: '⚙️',
-        theme: 'techGrey'
-    },
-    {
-        id: 'lops',
-        title: 'LOPs / Solaris',
-        desc: 'USD, Lighting, Layout',
-        icon: '🌐',
-        theme: 'gold'
-    }
-];
+const defaultSkills = contentSkills;
 
 export default function Skills() {
     const { isAdmin } = useAdmin();
@@ -173,7 +110,7 @@ export default function Skills() {
         }
     };
     return (
-        <section className={styles.skillsSection}>
+        <section className={styles.skillsSection} id="skills">
             <div className="container" style={{ position: 'relative' }}>
                 <h2 className={styles.sectionTitle}>VFX ARSENAL</h2>
 
@@ -234,7 +171,7 @@ export default function Skills() {
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />
                                     ) : (
-                                        <span className={styles.visualPlaceholder}>SKILL VISUAL</span>
+                                        <span className={styles.visualIcon} aria-hidden="true">{skill.icon}</span>
                                     )}
                                 </div>
                                 <p className={styles.cardDesc}>{skill.desc}</p>
@@ -314,7 +251,9 @@ export default function Skills() {
                 )}
 
                 <div className={styles.softwareList}>
-                    <span>Houdini</span> • <span>Unreal Engine</span> • <span>Nuke</span> • <span>Blender</span> • <span>Python</span>
+                    {software.map((tool, i) => (
+                        <span key={tool}>{i > 0 && ' • '}<span>{tool}</span></span>
+                    ))}
                 </div>
             </div>
         </section >

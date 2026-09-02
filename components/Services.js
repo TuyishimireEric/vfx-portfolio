@@ -4,18 +4,10 @@ import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
+import { services as contentServices } from '@/lib/content';
 import styles from './Services.module.css';
 
-const defaultServices = [
-    { id: 1, title: 'Pyro & Explosions', desc: 'High-end fire, smoke, and explosion simulations for cinematic shots.', icon: '🔥' },
-    { id: 2, title: 'RBD Destruction', desc: 'Procedural fracturing and rigid body dynamics for large-scale destruction.', icon: '💥' },
-    { id: 3, title: 'Fluid Simulations', desc: 'Realistic water, oceans, and viscosity effects using FLIP solvers.', icon: '🌊' },
-    { id: 4, title: 'Terrain Generation', desc: 'World building and heightfield generation for vast landscapes.', icon: '⛰️' },
-    { id: 5, title: 'Lookdev & Lighting', desc: 'Shading, texturing, and lighting setup for photorealistic rendering.', icon: '💡' },
-    { id: 6, title: 'Compositing', desc: 'Final integration of CG elements with live-action footage.', icon: '🎬' },
-    { id: 7, title: 'Motion Graphics', desc: 'Abstract 3D motion design and HUD animations.', icon: '✨' },
-    { id: 8, title: 'Environment FX', desc: 'Atmospherics, clouds, and weather effects.', icon: '☁️' }
-];
+const defaultServices = contentServices;
 
 export default function Services() {
     const { isAdmin } = useAdmin();
@@ -112,7 +104,7 @@ export default function Services() {
         }
     };
     return (
-        <section className={styles.servicesSection}>
+        <section className={styles.servicesSection} id="services">
             <div className="container">
                 <div className={styles.headerSection}>
                     <h2 className={styles.sectionTitle}>SERVICES</h2>

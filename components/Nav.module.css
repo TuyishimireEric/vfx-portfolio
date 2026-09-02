@@ -1,0 +1,133 @@
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 200;
+    transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+    border-bottom: 1px solid transparent;
+}
+
+.scrolled {
+    background: rgba(5, 5, 5, 0.75);
+    backdrop-filter: blur(12px);
+    border-bottom-color: rgba(0, 243, 255, 0.12);
+}
+
+.inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.brandMark {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--neon-blue);
+    border-radius: 6px;
+    color: var(--neon-blue);
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(0, 243, 255, 0.25);
+}
+
+.links {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+
+.link {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #bbb;
+    transition: color 0.2s;
+}
+
+.link:hover {
+    color: var(--neon-blue);
+}
+
+.reelBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--neon-blue);
+    padding: 0.55rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.reelBtn:hover {
+    background: #fff;
+    box-shadow: 0 0 18px rgba(0, 243, 255, 0.5);
+}
+
+.burger {
+    display: none;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-radius: 6px;
+    padding: 0.4rem;
+    cursor: pointer;
+}
+
+@media (max-width: 860px) {
+    .brandText {
+        display: none;
+    }
+
+    .burger {
+        display: inline-flex;
+    }
+
+    .links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: rgba(5, 5, 5, 0.97);
+        border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+        padding: 0.5rem 1.5rem 1.25rem;
+        display: none;
+    }
+
+    .links.open {
+        display: flex;
+    }
+
+    .link {
+        padding: 0.9rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .reelBtn {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+}

@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Loader2 } from 'lucide-react';
+import { about as defaultAbout } from '@/lib/content';
 import styles from './About.module.css';
 
 export default function About() {
@@ -12,14 +13,7 @@ export default function About() {
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [aboutContent, setAboutContent] = useState({
-        bio1: 'I am a VFX Technical Director specializing in procedural systems and dynamic simulations. With a passion for blending art and code, I create cinematic visual effects that push the boundaries of realism.',
-        bio2: 'My workflow integrates Houdini, Unreal Engine, and custom Python tools to deliver high-end results for film and games.',
-        location: 'Remote / Worldwide',
-        experience: '5+ Years',
-        specialty: 'Pyro & Destruction',
-        profile_image_url: ''
-    });
+    const [aboutContent, setAboutContent] = useState(defaultAbout);
     const [editForm, setEditForm] = useState({ ...aboutContent });
 
     useEffect(() => {
@@ -31,7 +25,9 @@ export default function About() {
                     .single();
 
                 if (data) {
-                    setAboutContent(data);
+                    const merged = { ...defaultAbout };
+                    Object.keys(defaultAbout).forEach((k) => { if (data[k]) merged[k] = data[k]; });
+                    setAboutContent(merged);
                 }
             } catch (error) {
                 // Silent error, use defaults
@@ -76,7 +72,7 @@ export default function About() {
         }
     };
     return (
-        <section className={styles.aboutSection}>
+        <section className={styles.aboutSection} id="about">
             <div className="container" style={{ position: 'relative' }}>
                 <h2 className={styles.sectionTitle}>ABOUT ME</h2>
 
@@ -93,7 +89,7 @@ export default function About() {
                             <div className={styles.hologramRing}></div>
                             <div className={styles.profileSlot}>
                                 {aboutContent.profile_image_url ? (
-                                    <img src={aboutContent.profile_image_url} alt="Profile" className={styles.profileImage} />
+                                    <img src={aboutContent.profile_image_url} alt="Jules Rukundo, Houdini FX artist" className={styles.profileImage} />
                                 ) : (
                                     <div className={styles.placeholderText}>PROFILE IMG</div>
                                 )}
@@ -116,7 +112,7 @@ export default function About() {
                                     <span className={styles.factLabel}>Location:</span> {aboutContent.location}
                                 </li>
                                 <li className={styles.factItem}>
-                                    <span className={styles.factLabel}>Experience:</span> {aboutContent.experience}
+                                    <span className={styles.factLabel}>Studios:</span> {aboutContent.experience}
                                 </li>
                                 <li className={styles.factItem}>
                                     <span className={styles.factLabel}>Specialty:</span> {aboutContent.specialty}

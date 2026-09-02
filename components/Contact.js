@@ -5,6 +5,7 @@ import styles from './Contact.module.css';
 import { useAdmin } from '@/context/AdminContext';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
+import { contact as defaultContact, socials, profile, SITE_URL } from '@/lib/content';
 
 export default function Contact() {
     const { isAdmin, openAuthModal, logout } = useAdmin();
@@ -13,10 +14,7 @@ export default function Contact() {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [contactInfo, setContactInfo] = useState({
-        email: 'contact@julesrukundo.com',
-        phone: '+1 (555) 123-4567'
-    });
+    const [contactInfo, setContactInfo] = useState(defaultContact);
     const [editForm, setEditForm] = useState(null);
 
     useEffect(() => {
@@ -28,7 +26,10 @@ export default function Contact() {
                     .single();
 
                 if (data) {
-                    setContactInfo(data);
+                    setContactInfo({
+                        email: data.email || defaultContact.email,
+                        phone: data.phone || defaultContact.phone,
+                    });
                 }
             } catch (error) {
                 console.log('Using default contact info');
@@ -75,40 +76,40 @@ export default function Contact() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus('sending');
-
         const formData = new FormData(e.target);
+        const payload = Object.fromEntries(formData.entries());
 
         try {
-            // Using Formspree - requires NEXT_PUBLIC_FORMSPREE_ENDPOINT in .env.local
-            // Example: https://formspree.io/f/your_form_id
-            const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'https://formspree.io/f/xbjnqngl'; // Fallback to a demo one or leave empty
-
-            const res = await fetch(endpoint, {
+            const res = await fetch('/api/contact', {
                 method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
+            const data = await res.json().catch(() => ({}));
 
             if (res.ok) {
                 setStatus('success');
-                addToast('Message sent successfully!', 'success');
+                addToast('Message sent — thank you!', 'success');
                 e.target.reset();
-                setTimeout(() => setStatus(''), 3000);
+                setTimeout(() => setStatus(''), 4000);
+            } else if (res.status === 503) {
+                // Form service not configured yet: hand off to the visitor's email client
+                const subject = encodeURIComponent(`Portfolio enquiry from ${payload.name}`);
+                const body = encodeURIComponent(`${payload.message}\n\n— ${payload.name} (${payload.email})`);
+                window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`;
+                setStatus('');
             } else {
                 setStatus('error');
-                addToast('Failed to send message. Please try again.', 'error');
+                addToast(data.error || 'Failed to send message. Please email directly.', 'error');
             }
         } catch (error) {
-            console.error('Error:', error);
             setStatus('error');
-            addToast('Failed to send message. Please try again.', 'error');
+            addToast('Failed to send message. Please email directly.', 'error');
         }
     };
 
     return (
-        <section className={styles.contactSection}>
+        <section className={styles.contactSection} id="contact">
             <div className="container" style={{ position: 'relative' }}>
                 <h2 className={styles.sectionTitle}>GET IN TOUCH</h2>
 
@@ -123,12 +124,7 @@ export default function Contact() {
                         {/* Left Column: Info */}
                         <div className={styles.infoColumn}>
                             <div className={styles.qrContainer}>
-                                {/* Real scannable QR code generated via API */}
-                                <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : 'https://yourportfolio.com')}&bgcolor=000000&color=00d4ff`}
-                                    alt="Portfolio QR Code"
-                                    className={styles.qrCode}
-                                />
+                                                                <img src="/qr.png" alt={`QR code — ${SITE_URL}`} className={styles.qrCode} width={200} height={200} />
                                 <p className={styles.qrLabel}>Scan to visit portfolio</p>
                             </div>
 
@@ -137,16 +133,22 @@ export default function Contact() {
                                     <span className={styles.label}>EMAIL</span>
                                     <a href={`mailto:${contactInfo.email}`} className={styles.value}>{contactInfo.email}</a>
                                 </div>
+                                {contactInfo.phone && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>PHONE</span>
+                                        <span className={styles.value}>{contactInfo.phone}</span>
+                                    </div>
+                                )}
                                 <div className={styles.detailItem}>
-                                    <span className={styles.label}>PHONE</span>
-                                    <span className={styles.value}>{contactInfo.phone}</span>
+                                    <span className={styles.label}>BASED IN</span>
+                                    <span className={styles.value}>{profile.location} · {profile.availability}</span>
                                 </div>
                                 <div className={styles.detailItem}>
                                     <span className={styles.label}>SOCIAL</span>
                                     <div className={styles.socialLinks}>
-                                        <a href="#" className={styles.socialLink}>LinkedIn</a>
-                                        <a href="#" className={styles.socialLink}>ArtStation</a>
-                                        <a href="#" className={styles.socialLink}>Vimeo</a>
+                                        {socials.map((s) => (
+                                            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>{s.label}</a>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -156,6 +158,7 @@ export default function Contact() {
                         <div className={styles.formColumn}>
                             <form className={styles.contactForm} onSubmit={handleSubmit}>
                                 <h3 className={styles.formTitle}>SEND MESSAGE</h3>
+                                <input type="text" name="website" tabIndex="-1" autoComplete="off" style={{ position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true" />
                                 <div className={styles.formGroup}>
                                     <input type="text" name="name" placeholder="NAME" required className={styles.input} />
                                 </div>
@@ -166,10 +169,10 @@ export default function Contact() {
                                     <textarea name="message" placeholder="MESSAGE" required className={styles.textarea}></textarea>
                                 </div>
                                 <button type="submit" className={styles.submitBtn} disabled={status === 'sending'}>
-                                    {status === 'sending' ? 'TRANSMITTING...' : 'INITIALIZE TRANSMISSION'}
+                                    {status === 'sending' ? 'SENDING...' : 'SEND MESSAGE'}
                                 </button>
-                                {status === 'success' && <p className={styles.successMsg}>TRANSMISSION RECEIVED</p>}
-                                {status === 'error' && <p className={styles.errorMsg}>TRANSMISSION FAILED</p>}
+                                {status === 'success' && <p className={styles.successMsg}>MESSAGE RECEIVED — I'LL REPLY SOON</p>}
+                                {status === 'error' && <p className={styles.errorMsg}>SENDING FAILED — PLEASE EMAIL DIRECTLY</p>}
                             </form>
                         </div>
                     </div>
@@ -177,7 +180,7 @@ export default function Contact() {
                     <div className={styles.footer}>
                         <p>&copy; {new Date().getFullYear()} Jules Rukundo. All rights reserved.</p>
                         <div className={styles.techStack}>
-                            Built with Next.js • Vanilla CSS • Love for VFX
+                            Houdini FX Artist — Kigali, Rwanda · Remote worldwide
                         </div>
                         {isAdmin ? (
                             <button onClick={logout} className={styles.adminLink}>

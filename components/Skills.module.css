@@ -536,3 +536,20 @@
 .editForm::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 212, 255, 0.5);
 }
+.visualIcon {
+    font-size: 3.5rem;
+    filter: drop-shadow(0 0 14px rgba(0, 243, 255, 0.35));
+    opacity: 0.9;
+}
+
+.cardVisual {
+    overflow: hidden;
+}
+
+.cardVisual img {
+    transition: transform 0.5s ease;
+}
+
+.skillCard:hover .cardVisual img {
+    transform: scale(1.06);
+}
