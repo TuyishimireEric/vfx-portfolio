@@ -14,7 +14,6 @@ export default function Home() {
             <Projects />
             <Services />
             <Contact />
-            {/* Other sections will be added here */}
         </main>
     );
 }
