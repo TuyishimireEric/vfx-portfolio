@@ -39,16 +39,156 @@
 
 .header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .title {
     font-family: var(--font-display);
     color: #fff;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+.subtitle {
+    color: #888;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.googleBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.googleBtn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.googleBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.googleIcon {
+    flex-shrink: 0;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 0.5rem 0 1rem;
+    color: #555;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.divider span {
+    padding: 0 10px;
+}
+
+.loggedInBox {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.userStatusHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.userCheckIcon {
+    color: var(--neon-blue);
+}
+
+.userEmail {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.roleTag {
+    color: #aaa;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.sessionActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 0.5rem;
+}
+
+.logoutBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 50, 50, 0.15);
+    border: 1px solid rgba(255, 50, 50, 0.3);
+    color: #ff6666;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+    background: rgba(255, 50, 50, 0.25);
+    border-color: #ff6666;
+}
+
+.continueBtn {
+    flex: 1;
+    background: var(--neon-blue);
+    border: none;
+    color: #000;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.continueBtn:hover {
+    background: #fff;
 }
 
 .tabs {
@@ -57,6 +197,7 @@
     padding: 4px;
     border-radius: 8px;
     gap: 4px;
+    margin-bottom: 1rem;
 }
 
 .tab {
@@ -81,52 +222,6 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-}
-
-.subtitle {
-    color: #999;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    margin-top: -0.75rem;
-}
-
-.googleBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    width: 100%;
-    background: #fff;
-    color: #1f1f1f;
-    border: none;
-    padding: 0.9rem;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.googleBtn:hover:not(:disabled) {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
-}
-
-.googleBtn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.inputGroup {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: #666;
-}
-
-.hint {
-    font-size: 0.75rem;
-    text-align: center;
 }
 
 .input {

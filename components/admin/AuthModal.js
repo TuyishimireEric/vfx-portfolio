@@ -1,15 +1,21 @@
 'use client';
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { X, Lock } from 'lucide-react';
+import { X, LogOut, CheckCircle2 } from 'lucide-react';
 import styles from './AuthModal.module.css';
+import { createUser } from '@/app/admin/users/actions';
+import { useAdmin } from '@/context/AdminContext';
 
 export default function AuthModal({ onClose }) {
+    const { user, isAdmin, logout } = useAdmin();
+    const [mode, setMode] = useState('login'); // 'login' or 'register'
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState(false);
 
-    const handleGoogleLogin = async () => {
+    const handleGoogleSignIn = async () => {
         setLoading(true);
         setMessage('');
         setError(false);
@@ -21,11 +27,41 @@ export default function AuthModal({ onClose }) {
                 },
             });
             if (error) throw error;
-            // Supabase redirects to Google — the page will reload on return,
-            // so there's nothing else to do here on success.
         } catch (err) {
             setError(true);
-            setMessage(err.message || 'Google sign-in is not available right now.');
+            setMessage(err.message || 'Google sign-in failed');
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage('');
+        setError(false);
+
+        try {
+            if (mode === 'login') {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                onClose(); // Close on success
+            } else {
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const result = await createUser(null, formData);
+                if (result.error) throw new Error(result.message);
+
+                setMessage(result.message);
+            }
+        } catch (err) {
+            setError(true);
+            setMessage(err.message || 'Authentication failed');
+        } finally {
             setLoading(false);
         }
     };
@@ -33,45 +69,127 @@ export default function AuthModal({ onClose }) {
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
-                <button onClick={onClose} className={styles.closeBtn}>
+                <button onClick={onClose} className={styles.closeBtn} aria-label="Close modal">
                     <X size={20} />
                 </button>
 
                 <div className={styles.header}>
                     <h2 className={styles.title}>System Access</h2>
                     <p className={styles.subtitle}>
-                        Sign in with Google. The site owner's account unlocks editing —
-                        everyone else can still browse and use the contact form freely.
+                        {user ? 'Current Active Session' : 'Sign in to access system features'}
                     </p>
                 </div>
 
-                <div className={styles.form}>
-                    {message && (
-                        <div className={`${styles.message} ${error ? styles.error : styles.success}`}>
-                            {message}
+                {user ? (
+                    <div className={styles.loggedInBox}>
+                        <div className={styles.userStatusHeader}>
+                            <CheckCircle2 size={18} className={styles.userCheckIcon} />
+                            <span className={styles.userEmail}>{user.email}</span>
                         </div>
-                    )}
-
-                    <button
-                        type="button"
-                        onClick={handleGoogleLogin}
-                        disabled={loading}
-                        className={styles.googleBtn}
-                    >
-                        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-                            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.62z" />
-                            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 0 0 9 18z" />
-                            <path fill="#FBBC05" d="M3.96 10.71A5.4 5.4 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3-2.33z" />
-                            <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z" />
-                        </svg>
-                        {loading ? 'Redirecting…' : 'Continue with Google'}
-                    </button>
-
-                    <div className={styles.inputGroup}>
-                        <Lock size={12} />
-                        <span className={styles.hint}>Only julesrukundo12@gmail.com gets edit access.</span>
+                        <p className={styles.roleTag}>
+                            {isAdmin ? '👑 Full Administrative Access' : '✉️ Standard Access — Contact Form Enabled'}
+                        </p>
+                        <div className={styles.sessionActions}>
+                            <button
+                                onClick={async () => {
+                                    await logout();
+                                }}
+                                className={styles.logoutBtn}
+                            >
+                                <LogOut size={16} /> Sign Out
+                            </button>
+                            <button onClick={onClose} className={styles.continueBtn}>
+                                Continue
+                            </button>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <>
+                        <button
+                            type="button"
+                            onClick={handleGoogleSignIn}
+                            disabled={loading}
+                            className={styles.googleBtn}
+                        >
+                            <svg className={styles.googleIcon} viewBox="0 0 24 24" width="20" height="20">
+                                <path
+                                    fill="#4285F4"
+                                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                />
+                                <path
+                                    fill="#34A853"
+                                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                />
+                                <path
+                                    fill="#FBBC05"
+                                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                                />
+                                <path
+                                    fill="#EA4335"
+                                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                                />
+                            </svg>
+                            <span>Continue with Google</span>
+                        </button>
+
+                        <div className={styles.divider}>
+                            <span>or credentials</span>
+                        </div>
+
+                        {/* Public self-registration is disabled: admin access is granted by
+                            owner email only. Set NEXT_PUBLIC_ALLOW_REGISTER=true to re-enable. */}
+                        {process.env.NEXT_PUBLIC_ALLOW_REGISTER === 'true' && (
+                            <div className={styles.tabs}>
+                                <button
+                                    className={`${styles.tab} ${mode === 'login' ? styles.activeTab : ''}`}
+                                    onClick={() => setMode('login')}
+                                >
+                                    Login
+                                </button>
+                                <button
+                                    className={`${styles.tab} ${mode === 'register' ? styles.activeTab : ''}`}
+                                    onClick={() => setMode('register')}
+                                >
+                                    Register
+                                </button>
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className={styles.form}>
+                            {message && (
+                                <div className={`${styles.message} ${error ? styles.error : styles.success}`}>
+                                    {message}
+                                </div>
+                            )}
+
+                            <div className={styles.inputGroup}>
+                                <input
+                                    type="email"
+                                    placeholder="Email Command"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className={styles.input}
+                                />
+                            </div>
+
+                            <div className={styles.inputGroup}>
+                                <input
+                                    type="password"
+                                    placeholder="Access Code"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className={styles.input}
+                                />
+                            </div>
+
+                            <button type="submit" disabled={loading} className={styles.submitBtn}>
+                                {loading ? 'Processing...' : (mode === 'login' ? 'Authenticate' : 'Register User')}
+                            </button>
+                        </form>
+                    </>
+                )}
             </div>
         </div>
     );
