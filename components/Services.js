@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { services as contentServices } from '@/lib/content';
 import styles from './Services.module.css';
 
@@ -118,13 +119,17 @@ export default function Services() {
 
                 <div className={styles.servicesGrid}>
                     {services.map(service => (
-                        <div key={service.id} className={styles.serviceItem}>
+                        <Link
+                            key={service.id}
+                            href={service.skillId ? `/projects/category/${service.skillId}` : '/#skills'}
+                            className={`${styles.serviceItem} ${styles.serviceItemLink}`}
+                        >
                             {isAdmin && (
                                 <div className={styles.adminControls}>
-                                    <button onClick={() => handleEditClick(service)} className={styles.editBtn}>
+                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditClick(service); }} className={styles.editBtn}>
                                         <Edit2 size={14} />
                                     </button>
-                                    <button onClick={() => handleDelete(service.id)} className={styles.delBtn}>
+                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(service.id); }} className={styles.delBtn}>
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -138,7 +143,7 @@ export default function Services() {
                                 <p className={styles.serviceDesc}>{service.desc}</p>
                             </div>
                             <div className={styles.divider}></div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             </div>

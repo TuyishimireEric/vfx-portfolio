@@ -7,7 +7,7 @@ import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { staggerContainer, staggerItem } from '@/lib/animations';
-import { skills as contentSkills, software } from '@/lib/content';
+import { skills as contentSkills, software, houdiniOps } from '@/lib/content';
 import styles from './Skills.module.css';
 
 const defaultSkills = contentSkills;
@@ -17,6 +17,11 @@ export default function Skills() {
     const { addToast } = useToast();
     const [skills, setSkills] = useState(defaultSkills);
     const [loading, setLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState(null);
+
+    const visibleSkills = activeFilter
+        ? skills.filter((s) => (s.contexts || []).includes(activeFilter))
+        : skills;
     const [editingSkill, setEditingSkill] = useState(null);
     const [skillForm, setSkillForm] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
@@ -115,19 +120,32 @@ export default function Skills() {
                 <h2 className={styles.sectionTitle}>VFX ARSENAL</h2>
 
                 <div className={styles.houdiniOps}>
-                    <div className={styles.opBadge}>SOPs</div>
-                    <div className={styles.opBadge}>DOPs</div>
-                    <div className={styles.opBadge}>VOPs</div>
-                    <div className={styles.opBadge}>POPs</div>
-                    <div className={styles.opBadge}>ROPs</div>
-                    <div className={styles.opBadge}>TOPs</div>
-                    <div className={styles.opBadge}>LOPs</div>
+                    {houdiniOps.map((op) => (
+                        <button
+                            key={op}
+                            type="button"
+                            className={`${styles.opBadge} ${activeFilter === op ? styles.opBadgeActive : ''}`}
+                            onClick={() => setActiveFilter(activeFilter === op ? null : op)}
+                            aria-pressed={activeFilter === op}
+                        >
+                            {op}
+                        </button>
+                    ))}
+                    {activeFilter && (
+                        <button type="button" className={styles.opBadgeClear} onClick={() => setActiveFilter(null)}>
+                            Clear filter ✕
+                        </button>
+                    )}
                 </div>
 
                 {isAdmin && (
                     <button onClick={handleAddClick} className={styles.addBtn}>
                         <Plus size={16} /> Add Skill
                     </button>
+                )}
+
+                {visibleSkills.length === 0 && (
+                    <p className={styles.noResults}>No skills tagged {activeFilter} yet.</p>
                 )}
 
                 <motion.div
@@ -137,7 +155,7 @@ export default function Skills() {
                     viewport={{ once: true, amount: 0.2 }}
                     variants={staggerContainer}
                 >
-                    {skills.map((skill) => (
+                    {visibleSkills.map((skill) => (
                         <Link href={`/projects/category/${skill.id}`} key={skill.id} className={styles.skillLink}>
                             <motion.div
                                 className={`${styles.skillCard} ${styles[skill.theme] || styles.cyan}`}

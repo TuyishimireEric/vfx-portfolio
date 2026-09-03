@@ -124,7 +124,7 @@ export default function Contact() {
                         {/* Left Column: Info */}
                         <div className={styles.infoColumn}>
                             <div className={styles.qrContainer}>
-                                                                <img src="/qr.png" alt={`QR code — ${SITE_URL}`} className={styles.qrCode} width={200} height={200} />
+                                <img src="/qr.svg" alt={`QR code — ${SITE_URL}`} className={styles.qrCode} width={200} height={200} />
                                 <p className={styles.qrLabel}>Scan to visit portfolio</p>
                             </div>
 

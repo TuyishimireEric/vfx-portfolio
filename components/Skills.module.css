@@ -31,12 +31,46 @@
     color: #888;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: inherit;
+    line-height: inherit;
 }
 
 .opBadge:hover {
     border-color: var(--neon-orange);
     color: var(--neon-orange);
     box-shadow: 0 0 10px rgba(255, 158, 0, 0.2);
+}
+
+.opBadgeActive {
+    border-color: var(--neon-orange);
+    color: #000;
+    background: var(--neon-orange);
+    box-shadow: 0 0 14px rgba(255, 158, 0, 0.4);
+}
+
+.opBadgeClear {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #888;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.opBadgeClear:hover {
+    color: #fff;
+    border-color: #fff;
+}
+
+.noResults {
+    text-align: center;
+    color: #888;
+    font-family: monospace;
+    padding: 2rem 0;
 }
 
 .skillsGrid {
