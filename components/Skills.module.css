@@ -25,52 +25,74 @@
 
 .opBadge {
     background: rgba(255, 255, 255, 0.05);
-    padding: 5px 15px;
+    padding: 6px 16px;
     border-radius: 4px;
     font-family: monospace;
+    font-size: 0.85rem;
     color: #888;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
     cursor: pointer;
-    font-size: inherit;
-    line-height: inherit;
+    transition: all 0.3s ease;
+    user-select: none;
 }
 
 .opBadge:hover {
     border-color: var(--neon-orange);
     color: var(--neon-orange);
     box-shadow: 0 0 10px rgba(255, 158, 0, 0.2);
+    transform: translateY(-2px);
 }
 
-.opBadgeActive {
-    border-color: var(--neon-orange);
-    color: #000;
-    background: var(--neon-orange);
-    box-shadow: 0 0 14px rgba(255, 158, 0, 0.4);
+.activeOpBadge {
+    background: rgba(255, 158, 0, 0.15) !important;
+    border-color: var(--neon-orange) !important;
+    color: var(--neon-orange) !important;
+    box-shadow: 0 0 15px rgba(255, 158, 0, 0.4) !important;
+    font-weight: 700;
 }
 
-.opBadgeClear {
-    background: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #888;
-    padding: 5px 12px;
+.highlightedCard {
+    border-color: var(--neon-blue) !important;
+    box-shadow: 0 0 35px rgba(0, 243, 255, 0.6) !important;
+    transform: translateY(-8px) scale(1.03) !important;
+    animation: pulseHighlight 2s infinite ease-in-out;
+}
+
+@keyframes pulseHighlight {
+    0%, 100% {
+        box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 45px rgba(0, 243, 255, 0.85);
+    }
+}
+
+.emptyFilter {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #777;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.resetFilterBtn {
+    background: transparent;
+    border: 1px solid var(--neon-orange);
+    color: var(--neon-orange);
+    padding: 0.5rem 1.5rem;
     border-radius: 4px;
     font-family: monospace;
-    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.opBadgeClear:hover {
-    color: #fff;
-    border-color: #fff;
-}
-
-.noResults {
-    text-align: center;
-    color: #888;
-    font-family: monospace;
-    padding: 2rem 0;
+.resetFilterBtn:hover {
+    background: rgba(255, 158, 0, 0.15);
+    box-shadow: 0 0 15px rgba(255, 158, 0, 0.3);
 }
 
 .skillsGrid {

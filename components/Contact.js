@@ -8,7 +8,7 @@ import { useToast } from '@/context/ToastContext';
 import { contact as defaultContact, socials, profile, SITE_URL } from '@/lib/content';
 
 export default function Contact() {
-    const { isAdmin, openAuthModal, logout } = useAdmin();
+    const { isAdmin, user, openAuthModal, logout } = useAdmin();
     const { addToast } = useToast();
     const [status, setStatus] = useState('');
     const [loading, setLoading] = useState(true);
@@ -80,29 +80,37 @@ export default function Contact() {
         const payload = Object.fromEntries(formData.entries());
 
         try {
-            const res = await fetch('/api/contact', {
+            // 1. Save to Supabase via our API route
+            await fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
+            }).catch(() => {}); // Ignore errors here, main goal is email
+
+            // 2. Send via Web3Forms directly from the client to avoid Cloudflare blocks
+            const web3Payload = {
+                ...payload,
+                access_key: '5c2bfd87-85db-409b-8de3-b26ab3bf490b',
+                subject: `Portfolio enquiry from ${payload.name}`,
+                from_name: payload.name
+            };
+
+            const res = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                body: JSON.stringify(web3Payload),
             });
-            const data = await res.json().catch(() => ({}));
 
             if (res.ok) {
                 setStatus('success');
                 addToast('Message sent — thank you!', 'success');
                 e.target.reset();
                 setTimeout(() => setStatus(''), 4000);
-            } else if (res.status === 503) {
-                // Form service not configured yet: hand off to the visitor's email client
-                const subject = encodeURIComponent(`Portfolio enquiry from ${payload.name}`);
-                const body = encodeURIComponent(`${payload.message}\n\n— ${payload.name} (${payload.email})`);
-                window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`;
-                setStatus('');
             } else {
-                setStatus('error');
-                addToast(data.error || 'Failed to send message. Please email directly.', 'error');
+                throw new Error('Web3Forms returned an error');
             }
         } catch (error) {
+            console.error('Contact form error:', error);
             setStatus('error');
             addToast('Failed to send message. Please email directly.', 'error');
         }
@@ -123,10 +131,16 @@ export default function Contact() {
                     <div className={styles.contactCard}>
                         {/* Left Column: Info */}
                         <div className={styles.infoColumn}>
-                            <div className={styles.qrContainer}>
+                            <a
+                                href={SITE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.qrContainer}
+                                title={`Visit ${SITE_URL}`}
+                            >
                                 <img src="/qr.svg" alt={`QR code — ${SITE_URL}`} className={styles.qrCode} width={200} height={200} />
                                 <p className={styles.qrLabel}>Scan to visit portfolio</p>
-                            </div>
+                            </a>
 
                             <div className={styles.contactDetails}>
                                 <div className={styles.detailItem}>
@@ -160,10 +174,25 @@ export default function Contact() {
                                 <h3 className={styles.formTitle}>SEND MESSAGE</h3>
                                 <input type="text" name="website" tabIndex="-1" autoComplete="off" style={{ position: 'absolute', left: '-9999px', opacity: 0 }} aria-hidden="true" />
                                 <div className={styles.formGroup}>
-                                    <input type="text" name="name" placeholder="NAME" required className={styles.input} />
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="NAME"
+                                        defaultValue={user?.user_metadata?.full_name || user?.user_metadata?.name || ''}
+                                        required
+                                        className={styles.input}
+                                    />
                                 </div>
                                 <div className={styles.formGroup}>
-                                    <input type="email" name="email" placeholder="EMAIL" required className={styles.input} />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="EMAIL"
+                                        defaultValue={user?.email || ''}
+                                        key={user?.email || 'guest'}
+                                        required
+                                        className={styles.input}
+                                    />
                                 </div>
                                 <div className={styles.formGroup}>
                                     <textarea name="message" placeholder="MESSAGE" required className={styles.textarea}></textarea>
@@ -183,10 +212,18 @@ export default function Contact() {
                             Houdini FX Artist — Kigali, Rwanda · Remote worldwide
                         </div>
                         {isAdmin ? (
-                            <button onClick={logout} className={styles.adminLink}>
+                            <button onClick={logout} className={styles.adminLink} title="Sign out of admin session">
                                 <LogOut size={12} />
-                                <span>Logout</span>
+                                <span>Admin (Logout)</span>
                             </button>
+                        ) : user ? (
+                            <div className={styles.userSessionFooter}>
+                                <span className={styles.userSessionEmail} title={user.email}>{user.email}</span>
+                                <button onClick={logout} className={styles.adminLink} title="Sign out">
+                                    <LogOut size={12} />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
                         ) : (
                             <button onClick={openAuthModal} className={styles.adminLink}>
                                 <Lock size={12} />

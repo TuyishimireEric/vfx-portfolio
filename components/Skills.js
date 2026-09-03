@@ -7,25 +7,35 @@ import { useToast } from '@/context/ToastContext';
 import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { staggerContainer, staggerItem } from '@/lib/animations';
-import { skills as contentSkills, software, houdiniOps } from '@/lib/content';
+import { skills as contentSkills, software } from '@/lib/content';
 import styles from './Skills.module.css';
 
 const defaultSkills = contentSkills;
+
+const OP_FILTERS = ['ALL', 'SOPs', 'DOPs', 'VOPs', 'POPs', 'ROPs', 'TOPs', 'LOPs'];
+
+const SKILL_OP_MAP = {
+    pyro: ['DOPs', 'SOPs', 'VOPs'],
+    rbd: ['DOPs', 'SOPs'],
+    flip: ['DOPs', 'SOPs'],
+    particles: ['POPs', 'SOPs', 'DOPs'],
+    vellum: ['SOPs', 'DOPs'],
+    crowds: ['DOPs', 'SOPs', 'TOPs'],
+    karma: ['LOPs', 'ROPs'],
+    comp: ['ROPs', 'VOPs', 'SOPs'],
+};
 
 export default function Skills() {
     const { isAdmin } = useAdmin();
     const { addToast } = useToast();
     const [skills, setSkills] = useState(defaultSkills);
     const [loading, setLoading] = useState(true);
-    const [activeFilter, setActiveFilter] = useState(null);
-
-    const visibleSkills = activeFilter
-        ? skills.filter((s) => (s.contexts || []).includes(activeFilter))
-        : skills;
     const [editingSkill, setEditingSkill] = useState(null);
     const [skillForm, setSkillForm] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [activeFilter, setActiveFilter] = useState('ALL');
+    const [highlightedSkillId, setHighlightedSkillId] = useState(null);
 
     useEffect(() => {
         const fetchSkills = async () => {
@@ -114,28 +124,53 @@ export default function Skills() {
             setIsSaving(false);
         }
     };
+    useEffect(() => {
+        const handleSelectSkill = (e) => {
+            const { skillId, op } = e.detail || {};
+            if (op && OP_FILTERS.includes(op)) {
+                setActiveFilter(op);
+            } else if (skillId && SKILL_OP_MAP[skillId]) {
+                const primaryOp = SKILL_OP_MAP[skillId][0];
+                setActiveFilter(primaryOp);
+            }
+            if (skillId) {
+                setHighlightedSkillId(skillId);
+                setTimeout(() => {
+                    setHighlightedSkillId(null);
+                }, 3500);
+            }
+        };
+
+        window.addEventListener('vfx:select-skill', handleSelectSkill);
+        return () => window.removeEventListener('vfx:select-skill', handleSelectSkill);
+    }, []);
+
+    const filteredSkills = skills.filter((skill) => {
+        if (activeFilter === 'ALL') return true;
+        const ops = skill.ops || SKILL_OP_MAP[skill.id] || [];
+        return (
+            ops.includes(activeFilter) ||
+            (skill.title && skill.title.toUpperCase().includes(activeFilter)) ||
+            (skill.desc && skill.desc.toUpperCase().includes(activeFilter))
+        );
+    });
+
     return (
         <section className={styles.skillsSection} id="skills">
             <div className="container" style={{ position: 'relative' }}>
                 <h2 className={styles.sectionTitle}>VFX ARSENAL</h2>
 
-                <div className={styles.houdiniOps}>
-                    {houdiniOps.map((op) => (
+                <div className={styles.houdiniOps} role="toolbar" aria-label="Houdini Op Filters">
+                    {OP_FILTERS.map((op) => (
                         <button
                             key={op}
                             type="button"
-                            className={`${styles.opBadge} ${activeFilter === op ? styles.opBadgeActive : ''}`}
-                            onClick={() => setActiveFilter(activeFilter === op ? null : op)}
-                            aria-pressed={activeFilter === op}
+                            className={`${styles.opBadge} ${activeFilter === op ? styles.activeOpBadge : ''}`}
+                            onClick={() => setActiveFilter(activeFilter === op && op !== 'ALL' ? 'ALL' : op)}
                         >
                             {op}
                         </button>
                     ))}
-                    {activeFilter && (
-                        <button type="button" className={styles.opBadgeClear} onClick={() => setActiveFilter(null)}>
-                            Clear filter ✕
-                        </button>
-                    )}
                 </div>
 
                 {isAdmin && (
@@ -144,21 +179,24 @@ export default function Skills() {
                     </button>
                 )}
 
-                {visibleSkills.length === 0 && (
-                    <p className={styles.noResults}>No skills tagged {activeFilter} yet.</p>
-                )}
-
                 <motion.div
                     className={styles.skillsGrid}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, amount: 0.2 }}
                     variants={staggerContainer}
+                    key={activeFilter}
                 >
-                    {visibleSkills.map((skill) => (
-                        <Link href={`/projects/category/${skill.id}`} key={skill.id} className={styles.skillLink}>
+                    {filteredSkills.map((skill) => (
+                        <Link
+                            href={`/projects/category/${skill.id}`}
+                            key={skill.id}
+                            id={`skill-${skill.id}`}
+                            className={styles.skillLink}
+                        >
                             <motion.div
-                                className={`${styles.skillCard} ${styles[skill.theme] || styles.cyan}`}
+                                layout
+                                className={`${styles.skillCard} ${styles[skill.theme] || styles.cyan} ${highlightedSkillId === skill.id ? styles.highlightedCard : ''}`}
                                 variants={staggerItem}
                                 whileHover={{
                                     y: -10,
@@ -197,6 +235,18 @@ export default function Skills() {
                             </motion.div>
                         </Link>
                     ))}
+                    {filteredSkills.length === 0 && (
+                        <div className={styles.emptyFilter}>
+                            <p>No skills match the &ldquo;{activeFilter}&rdquo; filter.</p>
+                            <button
+                                type="button"
+                                onClick={() => setActiveFilter('ALL')}
+                                className={styles.resetFilterBtn}
+                            >
+                                Show All Skills
+                            </button>
+                        </div>
+                    )}
                 </motion.div>
 
                 {editingSkill && (

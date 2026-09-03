@@ -59,6 +59,14 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.qrContainer:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
 }
 
 .qrCode {
@@ -419,4 +427,19 @@
 .saveBtn:hover {
     background: #fff;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.userSessionFooter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.userSessionEmail {
+    font-size: 0.8rem;
+    color: #888;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

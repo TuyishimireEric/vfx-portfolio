@@ -3,12 +3,38 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAdmin } from '@/context/AdminContext';
 import { useToast } from '@/context/ToastContext';
-import { Edit2, Save, X, Plus, Trash2, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Edit2, Save, X, Plus, Trash2, Loader2, ArrowRight } from 'lucide-react';
 import { services as contentServices } from '@/lib/content';
 import styles from './Services.module.css';
 
 const defaultServices = contentServices;
+
+const SERVICE_SKILL_MAP = {
+    1: { skillId: 'pyro', op: 'DOPs' },       // Pyro & Explosions
+    2: { skillId: 'rbd', op: 'DOPs' },        // RBD Destruction
+    3: { skillId: 'flip', op: 'DOPs' },       // FLIP Fluids & Oceans
+    4: { skillId: 'particles', op: 'POPs' },  // Particle & Magic FX
+    5: { skillId: 'vellum', op: 'SOPs' },     // Cloth & Soft Bodies
+    6: { skillId: 'karma', op: 'LOPs' },      // Lighting & Rendering
+    7: { skillId: 'comp', op: 'ROPs' },       // Compositing & Integration
+    8: { skillId: 'crowds', op: 'DOPs' },     // Full-Shot FX Vendor
+};
+
+const getServiceTarget = (service) => {
+    if (SERVICE_SKILL_MAP[service.id]) return SERVICE_SKILL_MAP[service.id];
+
+    const t = (service.title || '').toLowerCase();
+    if (t.includes('pyro') || t.includes('fire') || t.includes('explosion')) return { skillId: 'pyro', op: 'DOPs' };
+    if (t.includes('rbd') || t.includes('destruct')) return { skillId: 'rbd', op: 'DOPs' };
+    if (t.includes('fluid') || t.includes('water') || t.includes('flip')) return { skillId: 'flip', op: 'DOPs' };
+    if (t.includes('particle') || t.includes('magic') || t.includes('pop')) return { skillId: 'particles', op: 'POPs' };
+    if (t.includes('cloth') || t.includes('vellum')) return { skillId: 'vellum', op: 'SOPs' };
+    if (t.includes('light') || t.includes('karma') || t.includes('render')) return { skillId: 'karma', op: 'LOPs' };
+    if (t.includes('comp') || t.includes('nuke')) return { skillId: 'comp', op: 'ROPs' };
+    if (t.includes('crowd') || t.includes('vendor')) return { skillId: 'crowds', op: 'DOPs' };
+
+    return { skillId: 'pyro', op: 'ALL' };
+};
 
 export default function Services() {
     const { isAdmin } = useAdmin();
@@ -104,6 +130,24 @@ export default function Services() {
             setIsSaving(false);
         }
     };
+    const handleServiceClick = (service) => {
+        if (editingService) return;
+
+        const target = getServiceTarget(service);
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(
+                new CustomEvent('vfx:select-skill', {
+                    detail: { skillId: target.skillId, op: target.op },
+                })
+            );
+
+            const skillsSection = document.getElementById('skills');
+            if (skillsSection) {
+                skillsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    };
+
     return (
         <section className={styles.servicesSection} id="services">
             <div className="container">
@@ -119,17 +163,26 @@ export default function Services() {
 
                 <div className={styles.servicesGrid}>
                     {services.map(service => (
-                        <Link
+                        <div
                             key={service.id}
-                            href={service.skillId ? `/projects/category/${service.skillId}` : '/#skills'}
-                            className={`${styles.serviceItem} ${styles.serviceItemLink}`}
+                            className={styles.serviceItem}
+                            onClick={() => handleServiceClick(service)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleServiceClick(service);
+                                }
+                            }}
+                            title={`Explore ${service.title} in VFX Arsenal`}
                         >
                             {isAdmin && (
-                                <div className={styles.adminControls}>
-                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditClick(service); }} className={styles.editBtn}>
+                                <div className={styles.adminControls} onClick={(e) => e.stopPropagation()}>
+                                    <button onClick={(e) => { e.stopPropagation(); handleEditClick(service); }} className={styles.editBtn}>
                                         <Edit2 size={14} />
                                     </button>
-                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(service.id); }} className={styles.delBtn}>
+                                    <button onClick={(e) => { e.stopPropagation(); handleDelete(service.id); }} className={styles.delBtn}>
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -141,9 +194,14 @@ export default function Services() {
                             <div className={styles.serviceInfo}>
                                 <h3 className={styles.serviceTitle}>{service.title}</h3>
                                 <p className={styles.serviceDesc}>{service.desc}</p>
+                                <div className={styles.serviceFooter}>
+                                    <span className={styles.enterArsenalLink}>
+                                        View in VFX Arsenal <ArrowRight size={14} />
+                                    </span>
+                                </div>
                             </div>
                             <div className={styles.divider}></div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             </div>
